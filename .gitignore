@@ -1,0 +1,58 @@
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-debug.log
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+logs/
+*.log
+*.log.*
+logs/*.log
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Build files
+dist/
+build/
+
+# Cache files
+.cache/
+.nyc_output/
+coverage/
+.vscode/
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+
+# TypeScript
+*.tsbuildinfo
+
+# Dependency directories
+.bower_components/
+
+# Optional npm
+.npm/
+.npmrc
+
+# IDE/Editor settings
+.vscode/
+*.code-workspace
+
+# Lint and formatting
+.eslintcache
+.prettierignore
+
+# Debugging
+*.rej
+*.orig
