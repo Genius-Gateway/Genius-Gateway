@@ -57,8 +57,19 @@ const userSchema=new mongoose.Schema(
         checkPoint3: {
             type:Boolean,
             default:false
+        },
+        eliminated: { 
+            type: Boolean, 
+            default: false 
+        },
+        winner: { 
+            type: Boolean, 
+            default: false 
+        }, 
+        questions: { 
+            type: Number, 
+            default: 0 
         }
-    
     }
 )
 const User=mongoose.model("User",userSchema);
