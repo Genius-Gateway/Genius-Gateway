@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 // Or restrict to your frontend's origin (recommended for production)
 app.use(cors({
-    origin: ["http://localhost:5173","https://cresence2k25.onrender.com","https://genius-gateway2k25.vercel.app"],// Replace with your frontend URL
+    origin: ["http://localhost:5173","https://cresence2k25.onrender.com","https://geniusgateway2k25.vercel.app"],// Replace with your frontend URL
     methods: ["GET", "POST"],
     credentials: true // If you are using cookies or authentication
 }));
