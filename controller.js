@@ -41,12 +41,6 @@ const registerTeam = async (req, res) => {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
-        // Check if the team name already exists
-        const existingTeam = await User.findOne({ Teamname: teamDetails.teamName });
-        if (existingTeam) {
-            return res.status(409).json({ message: "Team name already taken" });
-        }
-
         // Check if any of the provided emails already exist in the database
         const existingEmail = await User.findOne({ emails: { $in: emails } });
         if (existingEmail) {
