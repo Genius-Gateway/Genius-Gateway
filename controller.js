@@ -53,7 +53,7 @@ const registerTeam = async (req, res) => {
             return res.status(409).json({ message: "One or more emails are already registered with another team" });
         }
 
-        const password = teamDetails.teamName + "@geniusgateway";
+        const password = teamDetails.teamName + "@genius";
 
         // Generate a unique 3-digit number for the team
         const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
