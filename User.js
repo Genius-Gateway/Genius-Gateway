@@ -7,7 +7,7 @@ const teammateSchema = new mongoose.Schema({
 
 const userSchema=new mongoose.Schema(
     {
-        Teamname: { type: String, required: true }, // Unique team name
+        Teamname: { type: String, required: true , unique:false }, // Unique team name
         teammates: { type: [teammateSchema], required: true }, // Array of teammates
         password:{
             type:String,
