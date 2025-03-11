@@ -41,12 +41,6 @@ const registerTeam = async (req, res) => {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
-        // Check if the team name already exists
-        const existingTeam = await User.findOne({ Teamname: teamDetails.teamName });
-        if (existingTeam) {
-            return res.status(409).json({ message: "Team name already taken" });
-        }
-
         // Check if any of the provided emails already exist in the database
         const existingEmail = await User.findOne({ emails: { $in: emails } });
         if (existingEmail) {
@@ -54,7 +48,7 @@ const registerTeam = async (req, res) => {
         }
         let teamname=teamDetails.teamName.replace(/\s+/g, "");
 
-        const password = teamname + "@geniusgateway";
+        const password = teamname + "@genius";
 
         // Generate a unique 3-digit number for the team
         const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -150,7 +144,8 @@ const getUserdetails = async(req,res) => {
             Checkpoint3:user.checkPoint3,
             eliminated: user.eliminated,   
             winner: user.winner,           
-            questions: user.questions
+            questions: user.questions,
+            teammates:user.teammates
         });
     } catch (error) {
         console.error('Error fetching user details:', error);
