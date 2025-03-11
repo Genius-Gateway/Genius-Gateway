@@ -61,7 +61,7 @@ const registerTeam = async (req, res) => {
 
         // Create a new user for the team (one account per team)
         const newUser = new User({
-            emails:emails,
+            emails: emails,
             Teamname: teamDetails.teamName,
             teammates: teamDetails.teammates, // Store teammates' names and emails
             points: 100,
@@ -74,7 +74,7 @@ const registerTeam = async (req, res) => {
             checkPoint1: false,
             checkPoint2: false,
             checkPoint3: false,
-            password:password
+            password: password
         });
 
         await newUser.save(); // Save the team to the database
@@ -98,7 +98,7 @@ const verifyUser = async (req, res) => {
         const { email, password } = req.body;
 
         // Check if user exists
-        const user = await User.findOne({emails: { $in: email }, password });
+        const user = await User.findOne({ emails: { $in: email }, password });
         if (!user) {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
@@ -110,7 +110,7 @@ const verifyUser = async (req, res) => {
     }
 }
 
-const getUserdetails = async(req,res) => {
+const getUserdetails = async (req, res) => {
     const { email } = req.body;
 
     // Check if email is provided
@@ -120,7 +120,7 @@ const getUserdetails = async(req,res) => {
 
     try {
         // Find user by email
-        const user = await User.findOne({emails: { $in: email }});
+        const user = await User.findOne({ emails: { $in: email } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -131,19 +131,19 @@ const getUserdetails = async(req,res) => {
             emails: user.emails,
             teamName: user.Teamname,
             Points: user.points,
-            Level1:user.level1,
-            Level2:user.level2,
-            Level3:user.level3,
-            gridNum:user.gridNumber,
-            groups:user.questionsArray,
-            UniqueNumber:user.uniqueNumber,
-            Checkpoint1:user.checkPoint1,
-            Checkpoint2:user.checkPoint2,
-            Checkpoint3:user.checkPoint3,
-            eliminated: user.eliminated,   
-            winner: user.winner,           
+            Level1: user.level1,
+            Level2: user.level2,
+            Level3: user.level3,
+            gridNum: user.gridNumber,
+            groups: user.questionsArray,
+            UniqueNumber: user.uniqueNumber,
+            Checkpoint1: user.checkPoint1,
+            Checkpoint2: user.checkPoint2,
+            Checkpoint3: user.checkPoint3,
+            eliminated: user.eliminated,
+            winner: user.winner,
             questions: user.questions,
-            teammates:user.teammates
+            teammates: user.teammates
         });
     } catch (error) {
         console.error('Error fetching user details:', error);
@@ -161,14 +161,14 @@ const updateMarks = async (req, res) => {
 
     try {
         // Find user by email
-        const user = await User.findOne({emails: { $in: email }});
+        const user = await User.findOne({ emails: { $in: email } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-       
-            user.points += 50; 
-            await user.save(); 
-        
+
+        user.points += 50;
+        await user.save();
+
 
         res.status(200).json({ message: 'Marks updated successfully', updatedMarks: user.points });
     } catch (error) {
@@ -181,25 +181,25 @@ const level1completion = async (req, res) => {
     const { email } = req.body;
     try {
         // Find the user by email
-        const user = await User.findOne({emails: { $in: email }});
-    
+        const user = await User.findOne({ emails: { $in: email } });
+
         if (!user) {
-          return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "User not found" });
         }
-    
+
         // Update the level 1 completion status
         user.level1 = true;
         await user.save();
-    
+
         res.json({ message: "Level 1 completed" });
-      } 
-      catch (error) {
+    }
+    catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
-      }
+    }
 }
 
-const decrement = async (req,res) => {
+const decrement = async (req, res) => {
     const { email, hintsUsed } = req.body;
 
     if (!email || !hintsUsed || hintsUsed < 1 || hintsUsed > 3) {
@@ -207,7 +207,7 @@ const decrement = async (req,res) => {
     }
 
     try {
-        let user = await User.findOne({emails: { $in: email }});
+        let user = await User.findOne({ emails: { $in: email } });
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -215,7 +215,7 @@ const decrement = async (req,res) => {
 
         // Calculate deduction based on hints used
         const deduction = hintsUsed === 1 ? 5 : hintsUsed === 2 ? 10 : 15;
-        user.points =  user.points - deduction;
+        user.points = user.points - deduction;
 
         await user.save();
 
@@ -276,11 +276,12 @@ const updateCheckpoint = async (req, res) => {
 
         await user.save();
 
-        res.json({ message: `Checkpoint ${checkpoint} updated successfully`, 
-                   checkPoint1: user.checkPoint1,
-                   checkPoint2: user.checkPoint2,
-                   checkPoint3: user.checkPoint3
-                 });
+        res.json({
+            message: `Checkpoint ${checkpoint} updated successfully`,
+            checkPoint1: user.checkPoint1,
+            checkPoint2: user.checkPoint2,
+            checkPoint3: user.checkPoint3
+        });
     } catch (error) {
         console.error("Error updating checkpoint:", error);
         res.status(500).json({ message: "Server error", error });
@@ -291,22 +292,22 @@ const level2completion = async (req, res) => {
     const { email } = req.body;
     try {
         // Find the user by email
-        const user = await User.findOne({emails: { $in: email }});
-    
+        const user = await User.findOne({ emails: { $in: email } });
+
         if (!user) {
-          return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "User not found" });
         }
-    
+
         // Update the level 1 completion status
         user.level2 = true;
         await user.save();
-    
+
         res.json({ message: "Level 2 completed" });
-      } 
-      catch (error) {
+    }
+    catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
-      }
+    }
 };
 
 const getLevel3Participants = async (req, res) => {
@@ -422,33 +423,45 @@ const incrementMarks = async (req, res) => {
 
 const getLevel2Leaderboard = async (req, res) => {
     try {
-        // Find users who have completed Level 1 (moved to Level 2)
-        const leaderboard = await User.find(
-            { level1: true },  
-            {
-                Teamname: 1,
-                points: 1,
-                questions: 1,
-                checkPoint1: 1,
-                checkPoint2: 1,
-                checkPoint3: 1,
-                _id: 0
-            }
-        ).sort({ points: -1, questions: -1 });  
-
-        res.status(200).json(leaderboard);
+      // Find users who have completed Level 1 (moved to Level 2)
+      const users = await User.find().lean();
+  
+      // Map over each user to calculate their checkpoint value
+      const leaderboard = users.map(user => {
+        let checkpoints = 0;
+        if (user.checkPoint1) {
+          checkpoints = 1;
+        }
+        if (user.checkPoint2) {
+          checkpoints = 2;
+        }
+        if (user.checkPoint3) {
+          checkpoints = 3;
+        }
+        // Add the computed checkpoints property to the user object
+        return { ...user, checkpoints };
+      });
+  
+      // Sort the leaderboard based on checkpoints, then points, then questions (all in descending order)
+      leaderboard.sort((a, b) => {
+        if (b.checkpoints !== a.checkpoints) return b.checkpoints - a.checkpoints;
+        if (b.points !== a.points) return b.points - a.points;
+        return b.questions - a.questions;
+      });
+  
+      res.status(200).json(leaderboard);
     } catch (error) {
-        console.error("Error fetching Level 2 leaderboard:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+      console.error("Error fetching Level 2 leaderboard:", error);
+      res.status(500).json({ message: "Internal Server Error" });
     }
-};
-
+  };
+  
 const getLevel3Leaderboard = async (req, res) => {
     try {
         // Find users who have completed Level 2 (moved to Level 3)
         const leaderboard = await User.find(
-            { level2: true },  
-            { Teamname: 1, _id: 0 }  
+            { level2: true },
+            { Teamname: 1, _id: 0 }
         );
 
         res.status(200).json(leaderboard);
@@ -459,4 +472,4 @@ const getLevel3Leaderboard = async (req, res) => {
 };
 
 
-export { registerTeam, verifyUser , getUserdetails , updateMarks , level1completion , decrement , getTeams , getLevel2Participants , updateCheckpoint , getLevel3Participants , level2completion , eliminateParticipants , completeLevel3 , incrementMarks , getLevel2Leaderboard , getLevel3Leaderboard};
+export { registerTeam, verifyUser, getUserdetails, updateMarks, level1completion, decrement, getTeams, getLevel2Participants, updateCheckpoint, getLevel3Participants, level2completion, eliminateParticipants, completeLevel3, incrementMarks, getLevel2Leaderboard, getLevel3Leaderboard };
