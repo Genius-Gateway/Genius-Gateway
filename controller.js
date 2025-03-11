@@ -52,8 +52,9 @@ const registerTeam = async (req, res) => {
         if (existingEmail) {
             return res.status(409).json({ message: "One or more emails are already registered with another team" });
         }
+        let teamname=teamDetails.teamName.replace(/\s+/g, "");
 
-        const password = teamDetails.teamName + "@geniusgateway";
+        const password = teamname + "@geniusgateway";
 
         // Generate a unique 3-digit number for the team
         const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -102,9 +103,10 @@ const registerTeam = async (req, res) => {
 const verifyUser = async (req, res) => {
     try {
         const { email, password } = req.body;
+        let upass=password.toLowerCase();
 
         // Check if user exists
-        const user = await User.findOne({emails: { $in: email }, password });
+        const user = await User.findOne({emails: { $in: email }, upass });
         if (!user) {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
