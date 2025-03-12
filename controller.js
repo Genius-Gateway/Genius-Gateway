@@ -490,6 +490,18 @@ const getLevel3Leaderboard = async (req, res) => {
     }
 };
 
+const getWinner=async(req,res)=>{
+    try{
+        const winner=await User.findOne({winner:true});
+        const runner=await User.findOne({runner:true});
+        // console.log("Got data:",winner,runner);
+        res.status(200).json({winner,runner});
+    }catch(error){
+        console.error("Error fetching winner:",error);
+        res.status(500).json({message:"Internal Server Error"});
+    }
+}
+
 const addRunner = async (req, res) => {
     try{
     const updateResult = await User.updateMany({}, { $set: { runner: false } });
@@ -501,4 +513,4 @@ const addRunner = async (req, res) => {
 }
 }
 
-export { registerTeam, verifyUser, getUserdetails, updateMarks, level1completion, decrement, getTeams, getLevel2Participants, updateCheckpoint, getLevel3Participants, level2completion, eliminateParticipants, completeLevel3, incrementMarks, getLevel2Leaderboard, getLevel3Leaderboard,addRunner };
+export { registerTeam, verifyUser, getUserdetails, updateMarks, level1completion, decrement, getTeams, getLevel2Participants, updateCheckpoint, getLevel3Participants, level2completion, eliminateParticipants, completeLevel3, incrementMarks, getLevel2Leaderboard, getLevel3Leaderboard,addRunner,getWinner };
