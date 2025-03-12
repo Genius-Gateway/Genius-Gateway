@@ -46,7 +46,7 @@ const registerTeam = async (req, res) => {
         if (existingEmail) {
             return res.status(409).json({ message: "One or more emails are already registered with another team" });
         }
-        let teamname=teamDetails.teamName.replace(/\s+/g, "");
+        let teamname = teamDetails.teamName.replace(/\s+/g, "");
 
         const password = teamname.toLowerCase() + "@genius";
 
@@ -97,10 +97,10 @@ const registerTeam = async (req, res) => {
 const verifyUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        let upass=password.toLowerCase();
+        let upass = password.toLowerCase();
 
         // Check if user exists
-        const user = await User.findOne({emails: { $in: email }, password:upass });
+        const user = await User.findOne({ emails: { $in: email }, password: upass });
         if (!user) {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
@@ -145,7 +145,8 @@ const getUserdetails = async (req, res) => {
             eliminated: user.eliminated,
             winner: user.winner,
             questions: user.questions,
-            teammates: user.teammates
+            teammates: user.teammates,
+            runner: user.runner
         });
     } catch (error) {
         console.error('Error fetching user details:', error);
@@ -368,32 +369,48 @@ const completeLevel3 = async (req, res) => {
 
     try {
         // Check if a winner already exists
-        const existingWinner = await User.findOne({ winner: true });
-
-        // Find the user attempting Level 3 completion
         const user = await User.findOne({ emails: { $in: email } });
-
         if (!user) {
             return res.status(404).json({ winner: false });
         }
-
-        // Mark Level 3 as completed
-        user.level3 = true;
-        await user.save();
-
-        if (existingWinner) {
+        const existingWinner = await User.findOne({ winner: true });
+        if (!existingWinner) {
             // If a winner already exists, don't make another winner
-            return res.status(200).json({ winner: false });
-        } else {
-            // No winner exists, make this user the winner
+            user.level3 = true;
             user.winner = true;
             await user.save();
             return res.status(200).json({ winner: true });
         }
+        const existingRunner = await User.findOne({ runner: true });
+        if (!existingRunner) {
+            // If a winner already exists, don't make another winner
+            user.level3 = true;
+            user.runner = true;
+            await user.save();
+            return res.status(200).json({ runner: true });
+        }
+        // Find the user attempting Level 3 completion
+
+
+        // if (!user) {
+        //     return res.status(404).json({ winner: false });
+        // }
+
+        // Mark Level 3 as completed
+        user.level3 = true;
+        await user.save();
+        return res.status(404).json({ winner: false });
+
+//         else {
+//     // No winner exists, make this user the winner
+//     user.winner = true;
+//     await user.save();
+//     return res.status(200).json({ winner: true });
+// }
     } catch (error) {
-        console.error("Error updating Level 3 status:", error);
-        res.status(500).json({ winner: false });
-    }
+    console.error("Error updating Level 3 status:", error);
+    res.status(500).json({ winner: false });
+}
 };
 
 const incrementMarks = async (req, res) => {
@@ -425,39 +442,39 @@ const incrementMarks = async (req, res) => {
 
 const getLevel2Leaderboard = async (req, res) => {
     try {
-      // Find users who have completed Level 1 (moved to Level 2)
-      const users = await User.find().lean();
-  
-      // Map over each user to calculate their checkpoint value
-      const leaderboard = users.map(user => {
-        let checkpoints = 0;
-        if (user.checkPoint1) {
-          checkpoints = 1;
-        }
-        if (user.checkPoint2) {
-          checkpoints = 2;
-        }
-        if (user.checkPoint3) {
-          checkpoints = 3;
-        }
-        // Add the computed checkpoints property to the user object
-        return { ...user, checkpoints };
-      });
-  
-      // Sort the leaderboard based on checkpoints, then points, then questions (all in descending order)
-      leaderboard.sort((a, b) => {
-        if (b.checkpoints !== a.checkpoints) return b.checkpoints - a.checkpoints;
-        if (b.points !== a.points) return b.points - a.points;
-        return b.questions - a.questions;
-      });
-  
-      res.status(200).json(leaderboard);
+        // Find users who have completed Level 1 (moved to Level 2)
+        const users = await User.find().lean();
+
+        // Map over each user to calculate their checkpoint value
+        const leaderboard = users.map(user => {
+            let checkpoints = 0;
+            if (user.checkPoint1) {
+                checkpoints = 1;
+            }
+            if (user.checkPoint2) {
+                checkpoints = 2;
+            }
+            if (user.checkPoint3) {
+                checkpoints = 3;
+            }
+            // Add the computed checkpoints property to the user object
+            return { ...user, checkpoints };
+        });
+
+        // Sort the leaderboard based on checkpoints, then points, then questions (all in descending order)
+        leaderboard.sort((a, b) => {
+            if (b.checkpoints !== a.checkpoints) return b.checkpoints - a.checkpoints;
+            if (b.points !== a.points) return b.points - a.points;
+            return b.questions - a.questions;
+        });
+
+        res.status(200).json(leaderboard);
     } catch (error) {
-      console.error("Error fetching Level 2 leaderboard:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+        console.error("Error fetching Level 2 leaderboard:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
-  };
-  
+};
+
 const getLevel3Leaderboard = async (req, res) => {
     try {
         // Find users who have completed Level 2 (moved to Level 3)
@@ -473,5 +490,15 @@ const getLevel3Leaderboard = async (req, res) => {
     }
 };
 
+const addRunner = async (req, res) => {
+    try{
+    const updateResult = await User.updateMany({}, { $set: { runner: false } });
+    console.log('Update Result:', updateResult);
+    res.status(200).json({ message: 'Runners updated' });
+}catch(error){
+    console.error('Error updating runner:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+}
+}
 
-export { registerTeam, verifyUser, getUserdetails, updateMarks, level1completion, decrement, getTeams, getLevel2Participants, updateCheckpoint, getLevel3Participants, level2completion, eliminateParticipants, completeLevel3, incrementMarks, getLevel2Leaderboard, getLevel3Leaderboard };
+export { registerTeam, verifyUser, getUserdetails, updateMarks, level1completion, decrement, getTeams, getLevel2Participants, updateCheckpoint, getLevel3Participants, level2completion, eliminateParticipants, completeLevel3, incrementMarks, getLevel2Leaderboard, getLevel3Leaderboard,addRunner };
